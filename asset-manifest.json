@@ -1,13 +1,13 @@
 {
-  "main.css": "/static/css/main.197da762.chunk.css",
-  "main.js": "/static/js/main.89c6016e.chunk.js",
-  "main.js.map": "/static/js/main.89c6016e.chunk.js.map",
-  "runtime~main.js": "/static/js/runtime~main.a8a9905a.js",
-  "runtime~main.js.map": "/static/js/runtime~main.a8a9905a.js.map",
-  "static/js/2.3cc3ab74.chunk.js": "/static/js/2.3cc3ab74.chunk.js",
-  "static/js/2.3cc3ab74.chunk.js.map": "/static/js/2.3cc3ab74.chunk.js.map",
-  "index.html": "/index.html",
-  "precache-manifest.6580e1cc529312d0a334c68a03a2f31f.js": "/precache-manifest.6580e1cc529312d0a334c68a03a2f31f.js",
-  "service-worker.js": "/service-worker.js",
-  "static/css/main.197da762.chunk.css.map": "/static/css/main.197da762.chunk.css.map"
+  "main.css": "/lls-book/static/css/main.197da762.chunk.css",
+  "main.js": "/lls-book/static/js/main.514e2f5f.chunk.js",
+  "main.js.map": "/lls-book/static/js/main.514e2f5f.chunk.js.map",
+  "runtime~main.js": "/lls-book/static/js/runtime~main.d57f2f97.js",
+  "runtime~main.js.map": "/lls-book/static/js/runtime~main.d57f2f97.js.map",
+  "static/js/2.a6d66220.chunk.js": "/lls-book/static/js/2.a6d66220.chunk.js",
+  "static/js/2.a6d66220.chunk.js.map": "/lls-book/static/js/2.a6d66220.chunk.js.map",
+  "index.html": "/lls-book/index.html",
+  "precache-manifest.741e3a4b90efef3c3f31883427b30b36.js": "/lls-book/precache-manifest.741e3a4b90efef3c3f31883427b30b36.js",
+  "service-worker.js": "/lls-book/service-worker.js",
+  "static/css/main.197da762.chunk.css.map": "/lls-book/static/css/main.197da762.chunk.css.map"
 }
