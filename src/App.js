@@ -16,18 +16,31 @@ const PAGES = [
 
 const bounceAnimation = keyframes`
   0% {
-    transform: translate3d(0px, 0px, 0px);
+    transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);
   }
 
-  50% {
-    transform: translate3d(0px, -100px, 0px);
+  20% {
+    transform: translate3d(0px, -100px, 0px) scale3d(0.95, 1.02, 1);
+  }
+
+  40% {
+    transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);
   }
 
   100% {
-    transform: translate3d(0px, 0px, 0px);
+    transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);
   }
 `
 
+const stopAnimation = keyframes`
+  0% {
+    transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);
+  }
+
+  100% {
+    transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);
+  }
+`
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -42,9 +55,13 @@ const StyledBook = styled.div`
   position: relative;
   transform-style: preserve-3d;
   height: 365px;
+  animation: ${({ flipped }) => flipped ? css`${stopAnimation} 1.5s ease forwards` : css`${bounceAnimation} 1.5s cubic-bezier(0, 1.04, 0.51, 1.23) 2s infinite`};
+`
+
+const StyledBookWrapper = styled.div`
+  transform-style: preserve-3d;
+  transition: all 0.5s ease ${({ flipped }) => flipped ? '0' : '0.75'}s;
   transform: rotate3d(0, 1, 0, ${({ flipped }) => flipped ? '0' : '20'}deg) translate3d(0px, 0px, ${({ flipped }) => flipped ? '250' : '-100'}px);
-  transition: transform 0.5s ease ${({ flipped }) => flipped ? '0' : '0.75'}s;
-  //animation: ${({ flipped }) => flipped ? 'none' : css`${bounceAnimation} 3s linear infinite`};
 `
 
 const StyledSpin = styled.div`
@@ -56,7 +73,6 @@ const StyledSpin = styled.div`
   transition: transform 0.5s ease ${({ flipped }) => flipped ? '0' : '0.75'}s;
   transform-origin: right;
   background: #eaeaea;
-  //box-shadow: inset -2px 1px 11px 0px #71717159;
   border: 1px solid #929292d9;
 `
 
@@ -70,22 +86,24 @@ class App extends Component{
 
     return (
       <StyledWrapper>
-        <StyledBook onClick={this.flip} flipped={flipped}>
-          {map(PAGES, (page, index) =>
-            <Page
-              flipped={[5, 6].includes(index) ? false : flipped}
-              delay={flipped ? 0.1 * index : 0.1 * (6 - index)}
-              isCover={[0, 6].includes(index)}
-              zIndex={6 - index}
-              rotateY={-180 + 10 * index}
-              page={page}
-              key={index}
-            >
-              {index}
-            </Page>
-          )}
-          <StyledSpin flipped={flipped} />
-        </StyledBook>
+        <StyledBookWrapper flipped={flipped}>
+          <StyledBook onClick={this.flip} flipped={flipped}>
+            {map(PAGES, (page, index) =>
+              <Page
+                flipped={[5, 6].includes(index) ? false : flipped}
+                delay={flipped ? 0.1 * index : 0.1 * (6 - index)}
+                isCover={[0, 6].includes(index)}
+                zIndex={6 - index}
+                rotateY={-180 + 10 * index}
+                page={page}
+                key={index}
+              >
+                {index}
+              </Page>
+            )}
+            <StyledSpin flipped={flipped} />
+          </StyledBook>
+        </StyledBookWrapper>
       </StyledWrapper>
     )
   }
