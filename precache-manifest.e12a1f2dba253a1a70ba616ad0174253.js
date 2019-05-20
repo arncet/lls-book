@@ -4,19 +4,19 @@ self.__precacheManifest = [
     "url": "/lls-book/static/js/runtime~main.d57f2f97.js"
   },
   {
-    "revision": "8943099741157de6056c",
-    "url": "/lls-book/static/js/main.64abd463.chunk.js"
+    "revision": "b12079ec0554b42c91b2",
+    "url": "/lls-book/static/js/main.cc7b7b40.chunk.js"
   },
   {
     "revision": "224401f623bdabf343e6",
     "url": "/lls-book/static/js/2.92ae956d.chunk.js"
   },
   {
-    "revision": "8943099741157de6056c",
+    "revision": "b12079ec0554b42c91b2",
     "url": "/lls-book/static/css/main.197da762.chunk.css"
   },
   {
-    "revision": "a9abfbbd80be7d49ecf76f07a0599183",
+    "revision": "13802d01e453dafb3676ae21ddf6dcd0",
     "url": "/lls-book/index.html"
   }
 ];
