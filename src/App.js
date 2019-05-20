@@ -1,110 +1,165 @@
-import React, { Component } from 'react'
-import styled, { css, keyframes } from 'styled-components'
-import map from 'lodash/map'
+import React, { PureComponent, createRef } from 'react'
+import styled from 'styled-components'
+import { BOOKS } from './fixtures'
+import get from 'lodash/get'
+import random from 'lodash/random'
+import size from 'lodash/size'
+import isNil from 'lodash/isNil'
 
-import Page from './Page'
+import Book from './Book'
+import { Replay, Eye, Close } from './Icons'
 
-const PAGES = [
-  'https://assets.lls.fr/books/978-2-37760-153-0-GEO2_P_2019.png',
-  'https://assets.lls.fr/marketing/geographie/GEO_DP_argu_edito_1.png',
-  'https://assets.lls.fr/marketing/geographie/GEO_DP_argu_edito_2.png',
-  'https://assets.lls.fr/marketing/geographie/GEO_DP_argu_edito_3.png',
-  'https://assets.lls.fr/marketing/geographie/GEO_DP_argu_edito_4.png',
-  'https://assets.lls.fr/marketing/geographie/GEO_DP_argu_edito_5.png',
-  'https://assets.lls.fr/marketing/geographie/GEO_DP_argu_edito_9.png',
-]
+const REROLLING_DELAY = 2
 
-const bounceAnimation = keyframes`
-  0% {
-    transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);
-  }
-
-  20% {
-    transform: translate3d(0px, -100px, 0px) scale3d(0.95, 1.02, 1);
-  }
-
-  40% {
-    transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);
-  }
-
-  100% {
-    transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);
-  }
-`
-
-const stopAnimation = keyframes`
-  0% {
-    transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);
-  }
-
-  100% {
-    transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);
-  }
-`
-
-const StyledWrapper = styled.div`
+const StyledApp = styled.div`
   display: flex;
+  justify-content: space-around;
   align-items: center;
-  justify-content: center;
-  perspective: 1000px;
-  transform-style: preserve-3d;
+  padding: 50px;
   height: 100vh;
+  box-sizing: border-box;
+  background: radial-gradient(circle at center,#94eaff 0,#00b3df 60%)
 `
 
-const StyledBook = styled.div`
-  position: relative;
-  transform-style: preserve-3d;
-  height: 365px;
-  animation: ${({ flipped }) => flipped ? css`${stopAnimation} 1.5s ease forwards` : css`${bounceAnimation} 1.5s cubic-bezier(0, 1.04, 0.51, 1.23) 2s infinite`};
+const StyledTopbar = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background-color: #005469;
+  padding: 20px;
+  height: 100vh;
+  box-sizing: border-box;
+  z-index: 2;
+  box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.15);
+  transition: all 0.5s ease;
+
+  transform: ${({ isOpened }) => `translate3d(${isOpened ? '0' : '-100'}%, 0px, 0px)`};
 `
 
-const StyledBookWrapper = styled.div`
-  transform-style: preserve-3d;
-  transition: all 0.5s ease ${({ flipped }) => flipped ? '0' : '0.75'}s;
-  transform: rotate3d(0, 1, 0, ${({ flipped }) => flipped ? '0' : '20'}deg) translate3d(0px, 0px, ${({ flipped }) => flipped ? '250' : '-100'}px);
+const StyledIconText = styled.div`
+  transition: all 0.1s ease;
 `
 
-const StyledSpin = styled.div`
-  position: absolute;
-  left: -37px;
-  height: 100%;
-  width: 35px;
-  transform: rotate3d(0, 1, 0, -90deg) translate3d(${({ flipped }) => flipped ? '-30' : '0'}px,0px,0px);
-  transition: transform 0.5s ease ${({ flipped }) => flipped ? '0' : '0.75'}s;
-  transform-origin: right;
-  background: #eaeaea;
-  border: 1px solid #929292d9;
+const StyledIconWrapper = styled.div`
+  color: ${({ isDisabled }) => isDisabled ? 'grey' : '#FFF'};
+  font-size: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+  cursor: pointer;
+  pointer-events: ${({ isDisabled }) => isDisabled ? 'none' : 'auto'};
+
+  svg{
+    border: 1px solid;
+    padding: 10px;
+    border-radius: 50%;
+    transition: all 0.1s ease;
+  }
+
+  &:hover{
+    ${StyledIconText} {
+      text-decoration: underline;
+    }
+
+    svg {
+      background-color: #FFF;
+      color: #005469;
+    }
+  }
+
 `
 
-class App extends Component{
-  state = { flipped: false }
+const getRandomBookPages = ({ firstPage, otherPages }) => {
+  const randomIndex = random(0, size(otherPages) - 1)
+  return {
+    page1: get(otherPages, randomIndex - 1, firstPage),
+    page2: get(otherPages, randomIndex)
+  }
+}
 
-  flip = () => this.setState(state => ({ flipped: !state.flipped }))
+const generateBooks = () => BOOKS.map(book => ({
+  ...book,
+  ...getRandomBookPages(book)
+}))
+
+class App extends PureComponent{
+  constructor(props) {
+    super(props)
+    this.state = {
+      x: 0,
+      y: 0,
+      openedBookIndex: null,
+      rerollBookIndex: null,
+      books: generateBooks()
+    }
+  }
+
+  ref = createRef()
+
+  componentDidMount = () => {
+    this.setCenter()
+    window.addEventListener('resize', this.setCenter)
+  }
+
+  componentWillUnmount = () => {
+    window.removeEventListener('resize', this.setCenter)
+  }
+
+  setCenter = () => {
+    const { width, height } = this.ref.current.getBoundingClientRect()
+    this.setState({ x: width / 2, y: height / 2 })
+  }
+
+  open = index => {
+    const isSame = this.state.openedBookIndex === index
+    const openedBookIndex = isSame ? null : index
+    this.setState({ openedBookIndex })
+  }
+
+  reroll = () => {
+    const { books, openedBookIndex } = this.state
+    const book = get(books, openedBookIndex)
+    const { page1, page2 } = getRandomBookPages(book)
+    const newBook = { ...book, page1, page2 }
+    const newBooks = Object.assign([], books, { [openedBookIndex]: newBook })
+    this.setState({ rerollBookIndex: openedBookIndex })
+    this.timeout = setTimeout(() => this.setState({ rerollBookIndex: null, books: newBooks}), REROLLING_DELAY * 1000)
+  }
 
   render() {
-    const { flipped } = this.state
+    const { x, y, openedBookIndex, rerollBookIndex, books } = this.state
 
     return (
-      <StyledWrapper>
-        <StyledBookWrapper flipped={flipped}>
-          <StyledBook onClick={this.flip} flipped={flipped}>
-            {map(PAGES, (page, index) =>
-              <Page
-                flipped={[5, 6].includes(index) ? false : flipped}
-                delay={flipped ? 0.1 * index : 0.1 * (6 - index)}
-                isCover={[0, 6].includes(index)}
-                zIndex={6 - index}
-                rotateY={-180 + 10 * index}
-                page={page}
-                key={index}
-              >
-                {index}
-              </Page>
-            )}
-            <StyledSpin flipped={flipped} />
-          </StyledBook>
-        </StyledBookWrapper>
-      </StyledWrapper>
+      <StyledApp ref={this.ref}>
+        {books.map((book, i) =>
+          <Book
+            book={book}
+            key={i}
+            parentCenter={{ x, y }}
+            isOpened={openedBookIndex === i}
+            rerolling={rerollBookIndex === i}
+            open={() => this.open(i)}
+          />
+        )}
+        <StyledTopbar isOpened={!isNil(openedBookIndex)}>
+          <div>
+            <StyledIconWrapper onClick={this.reroll} isDisabled={isNil(openedBookIndex)}>
+              <Replay />
+              <StyledIconText>Relancer</StyledIconText>
+            </StyledIconWrapper>
+            <StyledIconWrapper>
+              <Eye />
+              <StyledIconText>Voir plus</StyledIconText>
+            </StyledIconWrapper>
+          </div>
+          <StyledIconWrapper onClick={() => this.open(null)}>
+            <Close />
+            <StyledIconText>Fermer</StyledIconText>
+          </StyledIconWrapper>
+        </StyledTopbar>
+      </StyledApp>
     )
   }
 }
