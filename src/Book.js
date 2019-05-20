@@ -37,9 +37,9 @@ const StyledWrapper = styled.div`
   transform-style: preserve-3d;
   pointer-events: none; // Fix firefox
   transform-origin: center;
-  transition: transform ${MOVE_TO_CENTER_DURATION}s ease ${({ isCentered }) => isCentered ? '0' : MOVE_TO_CENTER_DURATION}s, z-index ${MOVE_TO_CENTER_DURATION}s ease ${({ isCentered }) => isCentered ? '0' : MOVE_TO_CENTER_DURATION * 2}s;
+  transition: transform ${MOVE_TO_CENTER_DURATION}s ease ${({ isCentered }) => isCentered ? '0' : MOVE_TO_CENTER_DURATION}s, z-index ${MOVE_TO_CENTER_DURATION}s ease;
   transform: ${({ center, isCentered }) => isCentered ? `translate3d(${center.x}px, ${center.y}px, 0px)` : 'none'};
-  z-index: ${({ isCentered }) => isCentered ? 1 : 0};
+  z-index: ${({ isCentered, wasCentered }) => isCentered ? 2 : wasCentered ? 1 : 0};
 
   & > * {
     pointer-events: auto; // Fix firefox
@@ -102,13 +102,13 @@ class Book extends Component{
   }
 
   render() {
-    const { isOpened, open, book: { otherPages, cover, page1, page2 }, rerolling } = this.props
+    const { isOpened, wasOpened, open, book: { otherPages, cover, page1, page2 }, rerolling } = this.props
     const { center } = this.state
     const pages = [...otherPages, page1, page2]
     const pageIsOpened = isOpened && !rerolling
 
     return (
-      <StyledWrapper ref={this.ref} center={center} isCentered={isOpened}>
+      <StyledWrapper ref={this.ref} center={center} isCentered={isOpened} wasCentered={wasOpened}>
         <StyledBookWrapper isOpened={isOpened}>
           <StyledBook onClick={!rerolling ? open : undefined} isOpened={isOpened}>
             <Page

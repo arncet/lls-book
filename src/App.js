@@ -91,6 +91,7 @@ class App extends PureComponent{
       x: 0,
       y: 0,
       openedBookIndex: null,
+      lastOpenedBookIndex: null,
       rerollBookIndex: null,
       books: generateBooks()
     }
@@ -113,9 +114,10 @@ class App extends PureComponent{
   }
 
   open = index => {
-    const isSame = this.state.openedBookIndex === index
-    const openedBookIndex = isSame ? null : index
-    this.setState({ openedBookIndex })
+    const { openedBookIndex } = this.state
+    const isSame = openedBookIndex === index
+    const newOpenedBookIndex = isSame ? null : index
+    this.setState({ openedBookIndex: newOpenedBookIndex, lastOpenedBookIndex: openedBookIndex })
   }
 
   reroll = () => {
@@ -129,7 +131,9 @@ class App extends PureComponent{
   }
 
   render() {
-    const { x, y, openedBookIndex, rerollBookIndex, books } = this.state
+    const { x, y, openedBookIndex, rerollBookIndex, lastOpenedBookIndex, books } = this.state
+
+    console.log(lastOpenedBookIndex)
 
     return (
       <StyledApp ref={this.ref}>
@@ -139,6 +143,7 @@ class App extends PureComponent{
             key={i}
             parentCenter={{ x, y }}
             isOpened={openedBookIndex === i}
+            wasOpened={lastOpenedBookIndex === i}
             rerolling={rerollBookIndex === i}
             open={() => this.open(i)}
           />
